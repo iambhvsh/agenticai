@@ -24,7 +24,7 @@
           "name": "Telegram account"
         }
       },
-      "notes": "Entry point \u2014 listens for all incoming customer messages"
+      "notes": "Entry point — listens for all incoming customer messages"
     },
     {
       "parameters": {
@@ -46,12 +46,12 @@
         "promptType": "define",
         "text": "={{ $json.message?.text || $json.text || \"\" }}",
         "options": {
-          "systemMessage": "You are Raj, a friendly sales assistant for Cafe Durga, Chhatrapati Sambhajinagar. Your goal is to help customers order AND increase their order value naturally.\n\nCRITICAL OUTPUT RULE:\nRespond ONLY with valid JSON. No text outside the JSON. Use \\n for line breaks inside the message string \u2014 never real newlines inside a JSON string.\n\nJSON schema (all fields always present):\n{\"message\":\"\",\"order_confirmed\":false,\"customer_name\":\"\",\"phone\":\"\",\"address\":\"\",\"items\":\"\",\"total\":0,\"method\":\"\",\"status\":\"\"}\n\nMESSAGE FORMATTING:\nUse \\n for new lines. Use emojis naturally (1-3 per message). No asterisks, no markdown. Keep text warm and readable on mobile.\n\nEXAMPLE \u2014 menu reply format:\n\"Here's our menu \ud83d\ude0a\\n\\nShakes:\\nCold Coffee - \u20b9120\\nOreo Shake - \u20b9160\\n\\nPizza:\\nCorn Pizza - \u20b9220 \u2b50 Bestseller\\n\\nWhat would you like?\"\n\nEXAMPLE \u2014 item confirmed format:\n\"Added 1x Corn Pizza \u20b9220 to your order \ud83c\udf55\\n\\nAnything else? Our Oreo Shake pairs great with it!\"\n\nEXAMPLE \u2014 order summary format:\n\"Here's your order summary \ud83d\ude0a\\n\\n1x Corn Pizza - \u20b9220\\n1x Oreo Shake - \u20b9160\\n\\nSubtotal: \u20b9380\\n\\nHow would you like to receive it?\\n1. Zomato\\n2. Swiggy\\n3. Dine-in\"\n\nMENU (\u20b9):\nShakes: Cold Coffee 120, Thick Cold Coffee 120, Thick Cold Coffee+Crush 170, Cold Coffee+Crush 120, Cold Coffee+Thunder 160, Thick Cold Coffee+Thunder 180, Cad-B 220, Cad-M 230, Oreo Shake 160, Black Forest Shake 150, Mango Shake 140, Brownie Shake 160, Vanilla Shake 120, Black Current Shake 140, Kiwi Shake 140, Kit Kat Shake 160, Strawberry Shake 140, Chocolate Shake 160, Butter Scotch Shake 120, Rose Shake 120\nSandwiches: Chocolate Sandwich 180, Paneer Sandwich 200, Cheese Corn Sandwich 150, Veg Tikki Sandwich 160, Classic Sandwich 170, Classic Cheese Sandwich 140, Bombay Sandwich 150, Tandoor Paneer Sandwich 180, Tandoor Paneer Club Sandwich 270, Baked Club Sandwich 300, Cheese Bombay Club 280, Paneer Tikka Sandwich 200, Pasta Sandwich 250\nPav Bhaji: Pav Bhaji 140, Extra Pav 20, Cheese Pav Bhaji 170, Masala Pav 120, Cheese Masala Pav 140\nMaggi: Plain Maggie 110, Cheese Maggie 160, Masala Maggie 160, Peri Peri Maggie 160, Paneer Maggie 180, Capsi Corn Maggie 160, Durga Special Maggie 240\nFries: Salted Fries 190, Peri Peri Fries 220, Masala Fries 210, Cheese Fries 260, Patato Shots 180, Chilly Garlic Patato Pops 200\nPizza: Margarita Pizza 180, Corn Pizza 220 \u2b50BESTSELLER, Onion Capsicum Pizza 180, Paneer Mexican Pizza 200\nBurgers: Classic Veg Burger 130, Paneer Burger 160, Cheese Burger 170, Maharaja Burger 280\nBreads: Cheese Garlic Bread 180, Cheese Chilly Toast 130, Bread Pizza Bite 170\nPasta: Red Sauce Pasta 220, White Sauce Pasta 250, Lasagna Baked Pasta 350\nDelivery fee: \u20b930\n\nSALES RULES (do this naturally, never pushy):\n- When customer orders food, suggest a shake or beverage if none ordered yet\n- When customer orders a shake only, mention a quick snack (fries, sandwich)\n- Mention the Corn Pizza as bestseller if customer is browsing or undecided\n- When showing final total, if it's under \u20b9200, gently ask if they'd like to add anything\n- Always say \"Anything else?\" after adding each item\n\nORDER FLOW:\n1. Greet warmly. Ask what they want to order.\n2. Add items one by one. Confirm each. Track running total. Upsell naturally.\n3. When customer says done/no/that's it \u2014 show full order summary with \\n formatting, then ask delivery method:\n   \"1. Zomato\\n2. Swiggy\\n3. Dine-in\"\n4. Collect details:\n   Zomato/Swiggy: ask name + phone. After collecting, share link.\n     Zomato link: https://www.zomato.com/aurangabad/cafe-durga-usmanpura\n     Swiggy link: https://www.swiggy.com/city/aurangabad/cafe-durga-usmanpura-rest514341\n   Dine-in: ask name + phone + preferred time.\n5. Final confirmation: send complete formatted summary. Set order_confirmed=true, status=Confirmed.\n   Do NOT set order_confirmed=true at any earlier step.\n\nPHONE RULE: Must be exactly 10 digits. If invalid, ask again politely.\nNever ask for info already provided in conversation.\n\nSPECIAL COMMANDS (reply immediately, skip order flow):\n\"status\"/\"order status\" \u2192 \"Your order is being prepared! \ud83d\udc9b\"\n\"agent\"/\"talk to human\"/\"support\" \u2192 \"Connecting you to our team at 08055718055 \ud83d\udcac\"\n\"location\"/\"info\"/\"where are you\"/\"address\"/\"cafe details\" \u2192 \"Cafe Durga - Usmanpura \ud83d\ude0a\\n\\n\ud83d\udccd Near VITS Hotel, Railway Station Road, Usmanpura, Chhatrapati Sambhajinagar - 431005\\n\u23f0 10:00 AM - 12:00 AM Daily\\n\ud83d\udcde 08055718055\\n\\n\ud83d\udef5 Order Online:\\nZomato: https://www.zomato.com/aurangabad/cafe-durga-usmanpura\\nSwiggy: https://www.swiggy.com/city/aurangabad/cafe-durga-usmanpura-rest514341\\n\\n\ud83d\uddfa\ufe0f Maps: https://maps.app.goo.gl/5BveExioyCCH9f1k6\\n\u2b50 4.0/5 | \u20b9250-300 for two\"\n",
+          "systemMessage": "You are Raj, a friendly sales assistant for Cafe Durga, Chhatrapati Sambhajinagar. Your goal is to help customers order AND increase their order value naturally.\n\nCRITICAL OUTPUT RULE:\nRespond ONLY with valid JSON. No text outside the JSON. Use \\n for line breaks inside the message string — never real newlines inside a JSON string.\n\nJSON schema (all fields always present):\n{\"message\":\"\",\"order_confirmed\":false,\"customer_name\":\"\",\"phone\":\"\",\"address\":\"\",\"items\":\"\",\"total\":0,\"method\":\"\",\"status\":\"\"}\n\nMESSAGE FORMATTING:\nUse \\n for new lines. Use emojis naturally (1-3 per message). No asterisks, no markdown. Keep text warm and readable on mobile.\n\nEXAMPLE — menu reply format:\n\"Here's our menu 😊\\n\\nShakes:\\nCold Coffee - ₹120\\nOreo Shake - ₹160\\n\\nPizza:\\nCorn Pizza - ₹220 ⭐ Bestseller\\n\\nWhat would you like?\"\n\nEXAMPLE — item confirmed format:\n\"Added 1x Corn Pizza ₹220 to your order 🍕\\n\\nAnything else? Our Oreo Shake pairs great with it!\"\n\nEXAMPLE — order summary format:\n\"Here's your order summary 😊\\n\\n1x Corn Pizza - ₹220\\n1x Oreo Shake - ₹160\\n\\nSubtotal: ₹380\\n\\nHow would you like to receive it?\\n1. Zomato\\n2. Swiggy\\n3. Dine-in\"\n\nMENU (₹):\nShakes: Cold Coffee 120, Thick Cold Coffee 120, Thick Cold Coffee+Crush 170, Cold Coffee+Crush 120, Cold Coffee+Thunder 160, Thick Cold Coffee+Thunder 180, Cad-B 220, Cad-M 230, Oreo Shake 160, Black Forest Shake 150, Mango Shake 140, Brownie Shake 160, Vanilla Shake 120, Black Current Shake 140, Kiwi Shake 140, Kit Kat Shake 160, Strawberry Shake 140, Chocolate Shake 160, Butter Scotch Shake 120, Rose Shake 120\nSandwiches: Chocolate Sandwich 180, Paneer Sandwich 200, Cheese Corn Sandwich 150, Veg Tikki Sandwich 160, Classic Sandwich 170, Classic Cheese Sandwich 140, Bombay Sandwich 150, Tandoor Paneer Sandwich 180, Tandoor Paneer Club Sandwich 270, Baked Club Sandwich 300, Cheese Bombay Club 280, Paneer Tikka Sandwich 200, Pasta Sandwich 250\nPav Bhaji: Pav Bhaji 140, Extra Pav 20, Cheese Pav Bhaji 170, Masala Pav 120, Cheese Masala Pav 140\nMaggi: Plain Maggie 110, Cheese Maggie 160, Masala Maggie 160, Peri Peri Maggie 160, Paneer Maggie 180, Capsi Corn Maggie 160, Durga Special Maggie 240\nFries: Salted Fries 190, Peri Peri Fries 220, Masala Fries 210, Cheese Fries 260, Patato Shots 180, Chilly Garlic Patato Pops 200\nPizza: Margarita Pizza 180, Corn Pizza 220 ⭐BESTSELLER, Onion Capsicum Pizza 180, Paneer Mexican Pizza 200\nBurgers: Classic Veg Burger 130, Paneer Burger 160, Cheese Burger 170, Maharaja Burger 280\nBreads: Cheese Garlic Bread 180, Cheese Chilly Toast 130, Bread Pizza Bite 170\nPasta: Red Sauce Pasta 220, White Sauce Pasta 250, Lasagna Baked Pasta 350\nDelivery fee: ₹30\n\nSALES RULES (do this naturally, never pushy):\n- When customer orders food, suggest a shake or beverage if none ordered yet\n- When customer orders a shake only, mention a quick snack (fries, sandwich)\n- Mention the Corn Pizza as bestseller if customer is browsing or undecided\n- When showing final total, if it's under ₹200, gently ask if they'd like to add anything\n- Always say \"Anything else?\" after adding each item\n\nORDER FLOW:\n1. Greet warmly. Ask what they want to order.\n2. Add items one by one. Confirm each. Track running total. Upsell naturally.\n3. When customer says done/no/that's it — show full order summary with \\n formatting, then ask delivery method:\n   \"1. Zomato\\n2. Swiggy\\n3. Dine-in\"\n4. Collect details:\n   Zomato/Swiggy: ask name + phone. After collecting, share link.\n     Zomato link: https://www.zomato.com/aurangabad/cafe-durga-usmanpura\n     Swiggy link: https://www.swiggy.com/city/aurangabad/cafe-durga-usmanpura-rest514341\n   Dine-in: ask name + phone + preferred time.\n5. Final confirmation: send complete formatted summary. Set order_confirmed=true, status=Confirmed.\n   Do NOT set order_confirmed=true at any earlier step.\n\nPHONE RULE: Must be exactly 10 digits. If invalid, ask again politely.\nNever ask for info already provided in conversation.\n\nSPECIAL COMMANDS (reply immediately, skip order flow):\n\"status\"/\"order status\" → \"Your order is being prepared! 💛\"\n\"agent\"/\"talk to human\"/\"support\" → \"Connecting you to our team at 08055718055 💬\"\n\"location\"/\"info\"/\"where are you\"/\"address\"/\"cafe details\" → \"Cafe Durga - Usmanpura 😊\\n\\n📍 Near VITS Hotel, Railway Station Road, Usmanpura, Chhatrapati Sambhajinagar - 431005\\n⏰ 10:00 AM - 12:00 AM Daily\\n📞 08055718055\\n\\n🛵 Order Online:\\nZomato: https://www.zomato.com/aurangabad/cafe-durga-usmanpura\\nSwiggy: https://www.swiggy.com/city/aurangabad/cafe-durga-usmanpura-rest514341\\n\\n🗺️ Maps: https://maps.app.goo.gl/5BveExioyCCH9f1k6\\n⭐ 4.0/5 | ₹250-300 for two\"\n",
           "maxIterations": 1
         }
       },
       "id": "c8694650-b1d0-4926-9aca-95b65b8249a5",
-      "name": "AI Agent",
+      "name": "AI Agent (Groq Primary)",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.8,
       "position": [
@@ -59,13 +59,17 @@
         -512
       ],
       "notesInFlow": true,
-      "notes": "Groq Llama 3.3 70B \u2014 outputs structured JSON always. No Structured Output Parser (removed \u2014 causes mid-conversation failures). JSON parsed in Enrich node."
+      "notes": "Primary model: Groq. If output is empty/invalid or contains errors, workflow switches to Gemini fallback.",
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 500
     },
     {
       "parameters": {
         "sessionIdType": "customKey",
         "sessionKey": "={{ $('Telegram Trigger').first().json.message.chat.id }}",
-        "contextWindowLength": 5
+        "contextWindowLength": 3
       },
       "id": "a6c06565-9960-4463-9927-0cdd0d3b0872",
       "name": "Window Buffer Memory",
@@ -75,11 +79,11 @@
         -968,
         -288
       ],
-      "notes": "Stores last 20 messages per customer session"
+      "notes": "Stores last 3 turns per chat to reduce token usage."
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\nconst chatId = String($('Telegram Trigger').first().json.message.chat.id);\n\nconst now = new Date();\nconst ist = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));\nconst pad = (n) => String(n).padStart(2, '0');\nconst timestamp = `${pad(ist.getUTCDate())}/${pad(ist.getUTCMonth()+1)}/${ist.getUTCFullYear()} ${pad(ist.getUTCHours())}:${pad(ist.getUTCMinutes())} IST`;\n\nlet raw_output = '';\nif (items.length > 0 && items[0].json) {\n  const item = items[0].json;\n  raw_output = (item.output || item.text || item.response || item.content || JSON.stringify(item)).toString().trim();\n}\n\nif (!raw_output || raw_output === '' || raw_output === 'undefined' || raw_output === '{}') {\n  return [{\n    json: {\n      order_confirmed: false,\n      telegram_message: \"Hi! I'm Raj from Cafe Durga \ud83d\ude0a How can I help you today?\",\n      chat_id: chatId,\n      order_id: '', customer_name: '', phone_number: '', phone_valid: false,\n      delivery_address: '', order_info: '', total_price: '0',\n      order_method: '', order_status: '', timestamp: timestamp,\n      validation_passed: false\n    }\n  }];\n}\n\nlet raw = {};\nlet parseSuccess = false;\n\ntry {\n  raw = JSON.parse(raw_output);\n  parseSuccess = true;\n} catch(e) {\n  try {\n    const cleaned = raw_output.replace(/^```json\\s*/i, '').replace(/^```\\s*/i, '').replace(/```\\s*$/i, '').replace(/^`/g, '').replace(/`$/g, '').trim();\n    raw = JSON.parse(cleaned);\n    parseSuccess = true;\n  } catch(e2) {\n    try {\n      const jsonMatch = raw_output.match(/\\{[\\s\\S]*\\}/);\n      if (jsonMatch) {\n        raw = JSON.parse(jsonMatch[0]);\n        parseSuccess = true;\n      }\n    } catch(e3) {}\n  }\n}\n\nif (!parseSuccess || !raw || Object.keys(raw).length === 0) {\n  raw = {\n    order_confirmed: false,\n    message: raw_output || \"Hi! I'm Raj from Cafe Durga \ud83d\ude0a What would you like to order?\",\n    order_id: '', customer_name: '', phone: '', address: '', items: '', total: 0, method: '', status: ''\n  };\n}\n\nlet telegramMessage = (raw.message || raw.response || raw.text || raw.reply || '').trim().replace(/\\\\n/g, '\\n');\n\nif (!telegramMessage) {\n  if (raw.order_confirmed === true) {\n    telegramMessage = \"Order confirmed! \u2705\\n\\nThank you for choosing Cafe Durga! \ud83d\ude0a\";\n  } else {\n    telegramMessage = \"Hi! I'm Raj from Cafe Durga \ud83d\ude0a What would you like to order today?\";\n  }\n}\n\nconst phoneRaw = raw.phone || raw.phone_number || raw.phoneNumber || '';\nconst phoneClean = phoneRaw.toString().replace(/[^0-9]/g, '');\nconst phoneValid = /^[0-9]{10}$/.test(phoneClean);\n\nconst customerName = (raw.customer_name || raw.customerName || raw.name || '').trim();\nconst deliveryAddress = (raw.address || raw.delivery_address || raw.deliveryAddress || '').trim();\n\nconst orderId = (raw.order_id && raw.order_id.trim() !== '' && !raw.order_id.includes('[') && !raw.order_id.includes('unix'))\n  ? raw.order_id\n  : `CD-${Math.floor(Date.now() / 1000)}`;\n\nconst totalAmount = Number(raw.total || raw.total_price || raw.totalPrice || raw.amount || 0);\n\nconst validationPassed = raw.order_confirmed === true && phoneValid && customerName.length > 0 && totalAmount > 0;\n\nreturn [{\n  json: {\n    order_confirmed: raw.order_confirmed === true,\n    telegram_message: telegramMessage,\n    chat_id: chatId,\n    order_id: orderId,\n    customer_name: customerName,\n    phone_number: phoneClean,\n    phone_valid: phoneValid,\n    delivery_address: deliveryAddress,\n    order_info: raw.items || '',\n    total_price: String(totalAmount),\n    order_method: raw.method || raw.orderMethod || '',\n    order_status: raw.status || 'Confirmed',\n    timestamp: timestamp,\n    validation_passed: validationPassed\n  }\n}];\n"
+        "jsCode": "const items = $input.all();\nconst chatId = String($('Telegram Trigger').first().json.message.chat.id);\n\nconst now = new Date();\nconst ist = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));\nconst pad = (n) => String(n).padStart(2, '0');\nconst timestamp = `${pad(ist.getUTCDate())}/${pad(ist.getUTCMonth()+1)}/${ist.getUTCFullYear()} ${pad(ist.getUTCHours())}:${pad(ist.getUTCMinutes())} IST`;\n\nlet raw_output = '';\nif (items.length > 0 && items[0].json) {\n  const item = items[0].json;\n  raw_output = (item.output || item.text || item.response || item.content || JSON.stringify(item)).toString().trim();\n}\n\nif (!raw_output || raw_output === '' || raw_output === 'undefined' || raw_output === '{}') {\n  return [{\n    json: {\n      order_confirmed: false,\n      telegram_message: \"Hi! I'm Raj from Cafe Durga 😊 How can I help you today?\",\n      chat_id: chatId,\n      order_id: '', customer_name: '', phone_number: '', phone_valid: false,\n      delivery_address: '', order_info: '', total_price: '0',\n      order_method: '', order_status: '', timestamp: timestamp,\n      validation_passed: false\n    }\n  }];\n}\n\nlet raw = {};\nlet parseSuccess = false;\n\ntry {\n  raw = JSON.parse(raw_output);\n  parseSuccess = true;\n} catch(e) {\n  try {\n    const cleaned = raw_output.replace(/^```json\\s*/i, '').replace(/^```\\s*/i, '').replace(/```\\s*$/i, '').replace(/^`/g, '').replace(/`$/g, '').trim();\n    raw = JSON.parse(cleaned);\n    parseSuccess = true;\n  } catch(e2) {\n    try {\n      const jsonMatch = raw_output.match(/\\{[\\s\\S]*\\}/);\n      if (jsonMatch) {\n        raw = JSON.parse(jsonMatch[0]);\n        parseSuccess = true;\n      }\n    } catch(e3) {}\n  }\n}\n\nif (!parseSuccess || !raw || Object.keys(raw).length === 0) {\n  raw = {\n    order_confirmed: false,\n    message: raw_output || \"Hi! I'm Raj from Cafe Durga 😊 What would you like to order?\",\n    order_id: '', customer_name: '', phone: '', address: '', items: '', total: 0, method: '', status: ''\n  };\n}\n\nlet telegramMessage = (raw.message || raw.response || raw.text || raw.reply || '').trim().replace(/\\\\n/g, '\\n');\n\nif (!telegramMessage) {\n  if (raw.order_confirmed === true) {\n    telegramMessage = \"Order confirmed! ✅\\n\\nThank you for choosing Cafe Durga! 😊\";\n  } else {\n    telegramMessage = \"Hi! I'm Raj from Cafe Durga 😊 What would you like to order today?\";\n  }\n}\n\nconst phoneRaw = raw.phone || raw.phone_number || raw.phoneNumber || '';\nconst phoneClean = phoneRaw.toString().replace(/[^0-9]/g, '');\nconst phoneValid = /^[0-9]{10}$/.test(phoneClean);\n\nconst customerName = (raw.customer_name || raw.customerName || raw.name || '').trim();\nconst deliveryAddress = (raw.address || raw.delivery_address || raw.deliveryAddress || '').trim();\n\nconst orderId = (raw.order_id && raw.order_id.trim() !== '' && !raw.order_id.includes('[') && !raw.order_id.includes('unix'))\n  ? raw.order_id\n  : `CD-${Math.floor(Date.now() / 1000)}`;\n\nconst totalAmount = Number(raw.total || raw.total_price || raw.totalPrice || raw.amount || 0);\n\nconst validationPassed = raw.order_confirmed === true && phoneValid && customerName.length > 0 && totalAmount > 0;\n\nreturn [{\n  json: {\n    order_confirmed: raw.order_confirmed === true,\n    telegram_message: telegramMessage,\n    chat_id: chatId,\n    order_id: orderId,\n    customer_name: customerName,\n    phone_number: phoneClean,\n    phone_valid: phoneValid,\n    delivery_address: deliveryAddress,\n    order_info: raw.items || '',\n    total_price: String(totalAmount),\n    order_method: raw.method || raw.orderMethod || '',\n    order_status: raw.status || 'Confirmed',\n    timestamp: timestamp,\n    validation_passed: validationPassed\n  }\n}];\n"
       },
       "id": "e4eec2fa-2bc9-404f-9107-ddd4c634f72d",
       "name": "Enrich & Validate Data",
@@ -123,7 +127,7 @@
         -528,
         -408
       ],
-      "notes": "True (output 0) \u2192 log to sheet + confirm + notify admin. False (output 1) \u2192 just reply to customer"
+      "notes": "True (output 0) → log to sheet + confirm + notify admin. False (output 1) → just reply to customer"
     },
     {
       "parameters": {
@@ -299,7 +303,7 @@
           "name": "Google Sheets account"
         }
       },
-      "notes": "Appends confirmed order to Google Sheet \u2014 headers must already exist in row 1"
+      "notes": "Appends confirmed order to Google Sheet — headers must already exist in row 1"
     },
     {
       "parameters": {
@@ -328,12 +332,12 @@
           "name": "Telegram account"
         }
       },
-      "notes": "Sends confirmation AFTER sheet write succeeds \u2014 guarantees logging happened first"
+      "notes": "Sends confirmation AFTER sheet write succeeds — guarantees logging happened first"
     },
     {
       "parameters": {
         "chatId": "1903854448",
-        "text": "\ud83d\udd14 NEW ORDER RECEIVED!\n\nCustomer: {{ $json.customer_name }}\nPhone: {{ $json.phone_number }}\nAddress: {{ $json.delivery_address }}\n\nOrder:\n{{ $json.order_info }}\n\nTotal: \u20b9{{ $json.total_price }}\nMethod: {{ $json.order_method }}\nOrder ID: {{ $json.order_id }}\n\nTime: {{ $json.timestamp }}",
+        "text": "🔔 NEW ORDER RECEIVED!\n\nCustomer: {{ $json.customer_name }}\nPhone: {{ $json.phone_number }}\nAddress: {{ $json.delivery_address }}\n\nOrder:\n{{ $json.order_info }}\n\nTotal: ₹{{ $json.total_price }}\nMethod: {{ $json.order_method }}\nOrder ID: {{ $json.order_id }}\n\nTime: {{ $json.timestamp }}",
         "additionalFields": {
           "appendAttribution": false
         }
@@ -357,7 +361,7 @@
           "name": "Telegram account"
         }
       },
-      "notes": "Sends new order alert to admin Telegram. Uses $env.ADMIN_CHAT_ID \u2014 set this in n8n env vars"
+      "notes": "Sends new order alert to admin Telegram. Uses $env.ADMIN_CHAT_ID — set this in n8n env vars"
     },
     {
       "parameters": {
@@ -375,7 +379,7 @@
       ],
       "webhookId": "cafe-durga-live-orders",
       "notesInFlow": true,
-      "notes": "GET /webhook/cafe-durga-orders \u2014 returns today's orders as JSON for the live display page"
+      "notes": "GET /webhook/cafe-durga-orders — returns today's orders as JSON for the live display page"
     },
     {
       "parameters": {
@@ -417,7 +421,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Filter for today's orders and build clean response\n// Also compute summary stats for the dashboard\n\nconst allOrders = $input.all().map(i => i.json);\n\n// Get today's date in DD/MM/YYYY (IST)\nconst now = new Date();\nconst istTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));\nconst pad = (n) => String(n).padStart(2, '0');\nconst todayPrefix = `${pad(istTime.getUTCDate())}/${pad(istTime.getUTCMonth() + 1)}/${istTime.getUTCFullYear()}`;\n\n// Filter to today and add sequential display number\nconst todayOrders = allOrders\n  .filter(o => (o['Timestamp'] || '').startsWith(todayPrefix))\n  .map((o, idx) => ({\n    display_number: idx + 1,\n    order_id: o['Order ID'] || '',\n    timestamp: o['Timestamp'] || '',\n    customer_name: o['Customer Name'] || '',\n    phone: o['Phone'] || '',\n    address: o['Address / Dine-in Time'] || '',\n    items: o['Items'] || '',\n    total: o['Total (\u20b9)'] || '0',\n    method: o['Method'] || '',\n    status: o['Status'] || 'Confirmed'\n  }));\n\n// Summary stats\nconst totalRevenue = todayOrders.reduce((sum, o) => sum + parseInt(o.total || 0, 10), 0);\nconst methodCounts = todayOrders.reduce((acc, o) => {\n  acc[o.method] = (acc[o.method] || 0) + 1;\n  return acc;\n}, {});\n\nreturn [{\n  json: {\n    success: true,\n    date: todayPrefix,\n    total_orders: todayOrders.length,\n    total_revenue: totalRevenue,\n    method_breakdown: methodCounts,\n    orders: todayOrders\n  }\n}];"
+        "jsCode": "// Filter for today's orders and build clean response\n// Also compute summary stats for the dashboard\n\nconst allOrders = $input.all().map(i => i.json);\n\n// Get today's date in DD/MM/YYYY (IST)\nconst now = new Date();\nconst istTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));\nconst pad = (n) => String(n).padStart(2, '0');\nconst todayPrefix = `${pad(istTime.getUTCDate())}/${pad(istTime.getUTCMonth() + 1)}/${istTime.getUTCFullYear()}`;\n\n// Filter to today and add sequential display number\nconst todayOrders = allOrders\n  .filter(o => (o['Timestamp'] || '').startsWith(todayPrefix))\n  .map((o, idx) => ({\n    display_number: idx + 1,\n    order_id: o['Order ID'] || '',\n    timestamp: o['Timestamp'] || '',\n    customer_name: o['Customer Name'] || '',\n    phone: o['Phone'] || '',\n    address: o['Address / Dine-in Time'] || '',\n    items: o['Items'] || '',\n    total: o['Total (₹)'] || '0',\n    method: o['Method'] || '',\n    status: o['Status'] || 'Confirmed'\n  }));\n\n// Summary stats\nconst totalRevenue = todayOrders.reduce((sum, o) => sum + parseInt(o.total || 0, 10), 0);\nconst methodCounts = todayOrders.reduce((acc, o) => {\n  acc[o.method] = (acc[o.method] || 0) + 1;\n  return acc;\n}, {});\n\nreturn [{\n  json: {\n    success: true,\n    date: todayPrefix,\n    total_orders: todayOrders.length,\n    total_revenue: totalRevenue,\n    method_breakdown: methodCounts,\n    orders: todayOrders\n  }\n}];"
       },
       "id": "f53625e4-cd2f-4736-9c29-48f5eb598326",
       "name": "Filter & Format Today's Orders",
@@ -475,11 +479,11 @@
         -1552,
         144
       ],
-      "notes": "Captures any workflow-level errors \u2014 set this workflow's ID in Settings > Error Workflow"
+      "notes": "Captures any workflow-level errors — set this workflow's ID in Settings > Error Workflow"
     },
     {
       "parameters": {
-        "jsCode": "const error = $input.first().json;\n\nconst now = new Date();\nconst ist = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));\nconst time = ist.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });\n\nconst errorMessage = `\ud83d\udea8 WORKFLOW ERROR\n\nTime: ${time}\nWorkflow: Cafe Durga Order Bot\nNode: ${error.node?.name || 'Unknown'}\nError: ${error.error?.message || 'Unknown error'}\n\nStack: ${error.error?.stack?.substring(0, 500) || 'No stack trace'}\n`;\n\nreturn [\n  {\n    json: {\n      message: errorMessage,\n    },\n  },\n];"
+        "jsCode": "const error = $input.first().json;\n\nconst now = new Date();\nconst ist = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));\nconst time = ist.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });\n\nconst errorMessage = `🚨 WORKFLOW ERROR\n\nTime: ${time}\nWorkflow: Cafe Durga Order Bot\nNode: ${error.node?.name || 'Unknown'}\nError: ${error.error?.message || 'Unknown error'}\n\nStack: ${error.error?.stack?.substring(0, 500) || 'No stack trace'}\n`;\n\nreturn [\n  {\n    json: {\n      message: errorMessage,\n    },\n  },\n];"
       },
       "id": "4440cab7-7c01-429b-9a94-c977517e3117",
       "name": "Format Error Alert",
@@ -542,7 +546,7 @@
     },
     {
       "parameters": {
-        "content": "## Cafe Durga \u2014 Order Bot\n\n**Flow:** Telegram \u2192 Pre-filter \u2192 AI Agent (Groq) \u2192 Enrich \u2192 Route\n\n**Order path:** Log to Sheet \u2192 Confirm Customer \u2192 Notify Admin\n\n**Model:** llama-3.3-70b-versatile\n**Memory:** 5 conversation pairs per chat ID\n**Output:** Pure JSON parsed by Enrich node\n\n**Live Orders API:** GET /webhook/cafe-durga-orders\n**Admin Telegram:** 1903854448\n**Sheet:** Cafe Durga - Orders (Sheet1)",
+        "content": "## Cafe Durga — Order Bot\n\n**Flow:** Telegram → Pre-filter → AI Agent (Groq) → Enrich → Route\n\n**Order path:** Log to Sheet → Confirm Customer → Notify Admin\n\n**Model:** llama-3.3-70b-versatile\n**Memory:** 5 conversation pairs per chat ID\n**Output:** Pure JSON parsed by Enrich node\n\n**Live Orders API:** GET /webhook/cafe-durga-orders\n**Admin Telegram:** 1903854448\n**Sheet:** Cafe Durga - Orders (Sheet1)",
         "height": 260,
         "width": 500,
         "color": 3
@@ -555,6 +559,95 @@
         -1552,
         -640
       ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json || {};\nconst raw = (item.output || item.text || item.response || item.content || '').toString().trim();\nconst hasError = !!(item.error || item.errorMessage || item.httpCode || /error|rate limit|timeout|unavailable|overloaded/i.test(raw));\nlet jsonLike = false;\nif (raw.startsWith('{') && raw.endsWith('}')) {\n  jsonLike = true;\n} else {\n  const cleaned = raw.replace(/^```json\\s*/i, '').replace(/^```\\s*/i, '').replace(/```\\s*$/i, '').trim();\n  if (cleaned.startsWith('{') && cleaned.endsWith('}')) jsonLike = true;\n}\nreturn [{ json: { ...item, raw_output: raw, use_fallback: hasError || !raw || !jsonLike } }];"
+      },
+      "id": "297678cd-9c54-472c-8e7b-ea658a8ab702",
+      "name": "Detect Groq Failure/Invalid Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        -512
+      ],
+      "notesInFlow": true,
+      "notes": "Flags Gemini fallback when Groq fails, is rate-limited, or returns non-JSON output."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "use-fallback",
+              "leftValue": "={{ $json.use_fallback }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ba65c045-856b-4a39-8ff7-57ba10332267",
+      "name": "Use Gemini Fallback?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -736,
+        -512
+      ],
+      "notesInFlow": true,
+      "notes": "true -> Gemini fallback, false -> continue with Groq output"
+    },
+    {
+      "parameters": {
+        "modelName": "gemini-1.5-flash",
+        "options": {}
+      },
+      "id": "5aabe593-c1f8-4726-8ece-f956bcb3f53f",
+      "name": "Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1096,
+        -152
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REPLACE_WITH_GEMINI_CREDENTIAL_ID",
+          "name": "Gemini account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message?.text || $json.text || \"\" }}",
+        "options": {
+          "systemMessage": "You are Raj, a friendly sales assistant for Cafe Durga, Chhatrapati Sambhajinagar. Your goal is to help customers order AND increase their order value naturally.\n\nCRITICAL OUTPUT RULE:\nRespond ONLY with valid JSON. No text outside the JSON. Use \\n for line breaks inside the message string — never real newlines inside a JSON string.\n\nJSON schema (all fields always present):\n{\"message\":\"\",\"order_confirmed\":false,\"customer_name\":\"\",\"phone\":\"\",\"address\":\"\",\"items\":\"\",\"total\":0,\"method\":\"\",\"status\":\"\"}\n\nMESSAGE FORMATTING:\nUse \\n for new lines. Use emojis naturally (1-3 per message). No asterisks, no markdown. Keep text warm and readable on mobile.\n\nEXAMPLE — menu reply format:\n\"Here's our menu 😊\\n\\nShakes:\\nCold Coffee - ₹120\\nOreo Shake - ₹160\\n\\nPizza:\\nCorn Pizza - ₹220 ⭐ Bestseller\\n\\nWhat would you like?\"\n\nEXAMPLE — item confirmed format:\n\"Added 1x Corn Pizza ₹220 to your order 🍕\\n\\nAnything else? Our Oreo Shake pairs great with it!\"\n\nEXAMPLE — order summary format:\n\"Here's your order summary 😊\\n\\n1x Corn Pizza - ₹220\\n1x Oreo Shake - ₹160\\n\\nSubtotal: ₹380\\n\\nHow would you like to receive it?\\n1. Zomato\\n2. Swiggy\\n3. Dine-in\"\n\nMENU (₹):\nShakes: Cold Coffee 120, Thick Cold Coffee 120, Thick Cold Coffee+Crush 170, Cold Coffee+Crush 120, Cold Coffee+Thunder 160, Thick Cold Coffee+Thunder 180, Cad-B 220, Cad-M 230, Oreo Shake 160, Black Forest Shake 150, Mango Shake 140, Brownie Shake 160, Vanilla Shake 120, Black Current Shake 140, Kiwi Shake 140, Kit Kat Shake 160, Strawberry Shake 140, Chocolate Shake 160, Butter Scotch Shake 120, Rose Shake 120\nSandwiches: Chocolate Sandwich 180, Paneer Sandwich 200, Cheese Corn Sandwich 150, Veg Tikki Sandwich 160, Classic Sandwich 170, Classic Cheese Sandwich 140, Bombay Sandwich 150, Tandoor Paneer Sandwich 180, Tandoor Paneer Club Sandwich 270, Baked Club Sandwich 300, Cheese Bombay Club 280, Paneer Tikka Sandwich 200, Pasta Sandwich 250\nPav Bhaji: Pav Bhaji 140, Extra Pav 20, Cheese Pav Bhaji 170, Masala Pav 120, Cheese Masala Pav 140\nMaggi: Plain Maggie 110, Cheese Maggie 160, Masala Maggie 160, Peri Peri Maggie 160, Paneer Maggie 180, Capsi Corn Maggie 160, Durga Special Maggie 240\nFries: Salted Fries 190, Peri Peri Fries 220, Masala Fries 210, Cheese Fries 260, Patato Shots 180, Chilly Garlic Patato Pops 200\nPizza: Margarita Pizza 180, Corn Pizza 220 ⭐BESTSELLER, Onion Capsicum Pizza 180, Paneer Mexican Pizza 200\nBurgers: Classic Veg Burger 130, Paneer Burger 160, Cheese Burger 170, Maharaja Burger 280\nBreads: Cheese Garlic Bread 180, Cheese Chilly Toast 130, Bread Pizza Bite 170\nPasta: Red Sauce Pasta 220, White Sauce Pasta 250, Lasagna Baked Pasta 350\nDelivery fee: ₹30\n\nSALES RULES (do this naturally, never pushy):\n- When customer orders food, suggest a shake or beverage if none ordered yet\n- When customer orders a shake only, mention a quick snack (fries, sandwich)\n- Mention the Corn Pizza as bestseller if customer is browsing or undecided\n- When showing final total, if it's under ₹200, gently ask if they'd like to add anything\n- Always say \"Anything else?\" after adding each item\n\nORDER FLOW:\n1. Greet warmly. Ask what they want to order.\n2. Add items one by one. Confirm each. Track running total. Upsell naturally.\n3. When customer says done/no/that's it — show full order summary with \\n formatting, then ask delivery method:\n   \"1. Zomato\\n2. Swiggy\\n3. Dine-in\"\n4. Collect details:\n   Zomato/Swiggy: ask name + phone. After collecting, share link.\n     Zomato link: https://www.zomato.com/aurangabad/cafe-durga-usmanpura\n     Swiggy link: https://www.swiggy.com/city/aurangabad/cafe-durga-usmanpura-rest514341\n   Dine-in: ask name + phone + preferred time.\n5. Final confirmation: send complete formatted summary. Set order_confirmed=true, status=Confirmed.\n   Do NOT set order_confirmed=true at any earlier step.\n\nPHONE RULE: Must be exactly 10 digits. If invalid, ask again politely.\nNever ask for info already provided in conversation.\n\nSPECIAL COMMANDS (reply immediately, skip order flow):\n\"status\"/\"order status\" → \"Your order is being prepared! 💛\"\n\"agent\"/\"talk to human\"/\"support\" → \"Connecting you to our team at 08055718055 💬\"\n\"location\"/\"info\"/\"where are you\"/\"address\"/\"cafe details\" → \"Cafe Durga - Usmanpura 😊\\n\\n📍 Near VITS Hotel, Railway Station Road, Usmanpura, Chhatrapati Sambhajinagar - 431005\\n⏰ 10:00 AM - 12:00 AM Daily\\n📞 08055718055\\n\\n🛵 Order Online:\\nZomato: https://www.zomato.com/aurangabad/cafe-durga-usmanpura\\nSwiggy: https://www.swiggy.com/city/aurangabad/cafe-durga-usmanpura-rest514341\\n\\n🗺️ Maps: https://maps.app.goo.gl/5BveExioyCCH9f1k6\\n⭐ 4.0/5 | ₹250-300 for two\"\n",
+          "maxIterations": 1
+        }
+      },
+      "id": "cc7bdb2f-7c72-48d2-9f75-3a0f607fc9a3",
+      "name": "AI Agent (Gemini Fallback)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -592,
+        -624
+      ],
+      "notesInFlow": true,
+      "notes": "Fallback agent: runs only if Groq fails or returns invalid output."
     }
   ],
   "pinData": {},
@@ -574,18 +667,7 @@
       "main": [
         [
           {
-            "node": "AI Agent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "AI Agent": {
-      "main": [
-        [
-          {
-            "node": "Enrich & Validate Data",
+            "node": "AI Agent (Groq Primary)",
             "type": "main",
             "index": 0
           }
@@ -702,7 +784,12 @@
       "ai_memory": [
         [
           {
-            "node": "AI Agent",
+            "node": "AI Agent (Groq Primary)",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "AI Agent (Gemini Fallback)",
             "type": "ai_memory",
             "index": 0
           }
@@ -713,7 +800,69 @@
       "ai_languageModel": [
         [
           {
-            "node": "AI Agent",
+            "node": "AI Agent (Groq Primary)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent (Groq Primary)": {
+      "main": [
+        [
+          {
+            "node": "Detect Groq Failure/Invalid Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Groq Failure/Invalid Output": {
+      "main": [
+        [
+          {
+            "node": "Use Gemini Fallback?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Use Gemini Fallback?": {
+      "main": [
+        [
+          {
+            "node": "AI Agent (Gemini Fallback)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enrich & Validate Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent (Gemini Fallback)": {
+      "main": [
+        [
+          {
+            "node": "Enrich & Validate Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent (Gemini Fallback)",
             "type": "ai_languageModel",
             "index": 0
           }
