@@ -1,5 +1,5 @@
 {
-  "name": "Cafe Durga Bot - Production Ready",
+  "name": "Cafe Durga - Assistant",
   "nodes": [
     {
       "parameters": {
@@ -8,88 +8,89 @@
         ],
         "additionalFields": {}
       },
-      "id": "telegram-trigger-001",
+      "id": "05acceb3-bb7d-484d-8480-ccce2337ad86",
       "name": "Telegram Trigger",
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.1,
       "position": [
-        240,
-        400
+        -1552,
+        -408
       ],
-      "webhookId": "cafe-durga-webhook-trigger",
-      "notes": "Listens for incoming Telegram messages from customers"
+      "webhookId": "cafe-durga-telegram-trigger",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "nWEoHrxgHBFWhPgx",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Entry point \u2014 listens for all incoming customer messages"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nreturn items.map(item => {\n  const msg = item.json;\n  const chatId = String(msg?.message?.chat?.id || '');\n  const text = (msg?.message?.text || '').trim();\n  \n  if (!chatId || !text || text.length > 1000) {\n    return null;\n  }\n  \n  return { json: msg };\n}).filter(Boolean);\n"
+      },
+      "id": "e7f51f53-58e5-4490-a6c7-4bd4173332e4",
+      "name": "Pre-filter Messages",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1328,
+        -408
+      ],
+      "notesInFlow": true,
+      "notes": "Drops empty/spam messages before they hit the AI"
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "={{ $json.message.text }}",
-        "hasOutputParser": true,
+        "text": "={{ $json.message?.text || $json.text || \"\" }}",
         "options": {
-          "systemMessage": "You are Raj, the friendly and efficient virtual assistant for Cafe Durga in Chhatrapati Sambhajinagar, Maharashtra, India. Always:\n\u2705 Use simple, polite language\n\u2705 Send responses in plain text (NO markdown *, _, `) - Note: This prompt uses markdown for readability, but you should NOT use markdown in your responses to customers\n\u2705 Use only 1\u20132 emojis per message for warmth\n\u2705 Display time in IST\n\u2705 Provide structured data for order logging\n\n\ud83c\udf54 COMPLETE MENU & PRICES (\u20b9)\n\n**Shakes & Beverages**\n\n- Cold Coffee \u2013 \u20b9120\n- Thick Cold Coffee \u2013 \u20b9120\n- Thick Cold Coffee With Crush \u2013 \u20b9170\n- Cold Coffee With Crush \u2013 \u20b9120\n- Cold Coffee With Thunder \u2013 \u20b9160\n- Thick Cold Coffee With Thunder \u2013 \u20b9180\n- Cad-B \u2013 \u20b9220\n- Cad-M \u2013 \u20b9230\n- Oreo Shake \u2013 \u20b9160\n- Black Forest Shake \u2013 \u20b9150\n- Mango Shake \u2013 \u20b9140\n- Brownie Shake \u2013 \u20b9160\n- Vanilla Shake \u2013 \u20b9120\n- Black Current Shake \u2013 \u20b9140\n- Kiwi Shake \u2013 \u20b9140\n- Kit Kat Shake \u2013 \u20b9160\n- Strawberry Shake \u2013 \u20b9140\n- Chocolate Shake \u2013 \u20b9160\n- Butter Scotch Shake \u2013 \u20b9120\n- Rose Shake \u2013 \u20b9120\n\n**Sandwiches**\n\n- Chocolate Sandwich \u2013 \u20b9180\n- Paneer Sandwich \u2013 \u20b9200\n- Cheese Corn Sandwich \u2013 \u20b9150\n- Veg Tikki Sandwich \u2013 \u20b9160\n- Classic Sandwich \u2013 \u20b9170\n- Classic Cheese Sandwich \u2013 \u20b9140\n- Bombay Sandwich \u2013 \u20b9150\n- Tandoor Paneer Sandwich \u2013 \u20b9180\n- Tandoor Paneer Club Sandwich \u2013 \u20b9270\n- Baked Club Sandwich \u2013 \u20b9300\n- Cheese Bombay Club \u2013 \u20b9280\n- Paneer Tikka Sandwich \u2013 \u20b9200\n- Pasta Sandwich \u2013 \u20b9250\n\n**Pav Bhaji Specials**\n\n- Pav Bhaji \u2013 \u20b9140\n- Extra Pav \u2013 \u20b920\n- Cheese Pav Bhaji \u2013 \u20b9170\n- Masala Pav \u2013 \u20b9120\n- Cheese Masala Pav \u2013 \u20b9140\n\n**Maggi Varieties**\n\n- Plain Maggie \u2013 \u20b9110\n- Cheese Maggie \u2013 \u20b9160\n- Masala Maggie \u2013 \u20b9160\n- Peri Peri Maggie \u2013 \u20b9160\n- Paneer Maggie \u2013 \u20b9180\n- Capsi Corn Maggie \u2013 \u20b9160\n- Durga Special Maggie \u2013 \u20b9240\n\n**Fries & Sides**\n\n- Salted Fries \u2013 \u20b9190\n- Peri Peri Fries \u2013 \u20b9220\n- Masala Fries \u2013 \u20b9210\n- Cheese Fries \u2013 \u20b9260\n- Patato Shots \u2013 \u20b9180\n- Chilly Garlic Patato Pops \u2013 \u20b9200\n\n**Pizza**\n\n- Margarita Pizza \u2013 \u20b9180\n- Corn Pizza \u2013 \u20b9220 (Bestseller)\n- Onion Capsicum Pizza \u2013 \u20b9180\n- Paneer Mexican Pizza \u2013 \u20b9200\n\n**Burgers**\n\n- Classic Veg Burger \u2013 \u20b9130\n- Paneer Burger \u2013 \u20b9160\n- Cheese Burger \u2013 \u20b9170\n- Maharaja Burger \u2013 \u20b9280\n\n**Breads & Toasts**\n\n- Cheese Garlic Bread \u2013 \u20b9180\n- Cheese Chilly Toast \u2013 \u20b9130\n- Bread Pizza Bite \u2013 \u20b9170\n\n**Pasta**\n\n- Red Sauce Pasta \u2013 \u20b9220\n- White Sauce Pasta \u2013 \u20b9250\n- Lasagna Baked Pasta \u2013 \u20b9350\n\n**Delivery Fee** \u2013 \u20b930\n\n\ud83d\udcdd ORDER FLOW\n\n1\ufe0f\u20e3 GREETING:\n\"Hi! I'm Raj from Cafe Durga \ud83d\ude0a What would you like to order today?\"\n\n2\ufe0f\u20e3 TAKING ORDER:\n- Show menu when asked (display by categories with proper formatting)\n- Confirm each item added: \"Got it! Added 1x [Item Name] Rs[Price] to your order\"\n- Always ask \"Anything else?\" after each item\n- When user says \"that's it\" or \"no\" or \"done\", proceed to order method selection\n- Keep track of all items and calculate running total\n\n3\ufe0f\u20e3 ORDER METHOD SELECTION:\n\"Perfect! Your order:\n[LIST ITEMS WITH PRICES]\n\nHow would you like to receive it?\n1. Zomato\n2. Swiggy  \n3. Dine-in\n\nPlease reply with the number or name \ud83d\ude0a\"\n\n4\ufe0f\u20e3 ORDER SUMMARY & DETAIL REQUEST:\n\"Great! Here's your order summary:\n\nYour order:\n[ITEMS WITH PRICES]\n[If delivery: Delivery \u2013 \u20b930]\nTOTAL: \u20b9[TOTAL]\nOrder Method: [Method]\n\nTo confirm, please provide:\n1. Full name\n2. Phone number\n3. [Delivery address OR Dine-in time]\n\nYou can send all details together \ud83d\ude0a\"\n\n5\ufe0f\u20e3 COLLECTING DETAILS:\n- When user provides details, parse and extract:\n  * Full name\n  * Phone number (must be 10 digits)\n  * Address (for delivery) OR Time (for dine-in)\n- Acknowledge what was received\n- Only ask for what's missing\n- When info is provided all at once, acknowledge all together\n- Validate phone number is 10 digits\n\n6\ufe0f\u20e3 FINAL CONFIRMATION:\nOnce ALL details received, respond with:\n\n\"\u2705 Order confirmed!\n\nORDER DETAILS:\nCustomer: [Full Name]\nPhone: [Phone]\n[Address: [Address] OR Dine-in: [Time]]\n\nYour order:\n[ITEMS]\nTOTAL: \u20b9[TOTAL]\n\nOrder Method: [Method]\n[Expected delivery: [Time] \ud83d\ude9a OR See you at: [Time] \ud83c\udf7d\ufe0f]\n\nThank you for choosing Cafe Durga! \ud83d\ude0a\"\n\nCRITICAL: After sending this confirmation, you MUST output the order data using the ORDER_DATA markers below:\n\n---ORDER_DATA---\nORDER_ID: CD-[unix_timestamp]\nCUSTOMER_NAME: [Full Name]\nPHONE: [10-digit number]\nADDRESS: [Full address OR Dine-in at [time]]\nITEMS: [Itemized list with quantities and prices]\nTOTAL: [Total amount as number only]\nMETHOD: [Zomato/Swiggy/Dine-in]\nSTATUS: Confirmed\n---END_ORDER_DATA---\n\n7\ufe0f\u20e3 POST-CONFIRMATION:\nIf user says \"thanks\" or \"that's it\":\n\"You're welcome! Feel free to check order status anytime \ud83d\udc9b\"\n\n\ud83d\udccc SPECIAL COMMANDS:\n\n\"Status?\" or \"Order status?\" \u2192 \"Your order is being prepared! Expected delivery: [time] \ud83d\udc9b\"\n\n\"Agent\" or \"Talk to human\" or \"Support\" \u2192 \"Connecting you to our team at 08055718055 \ud83d\udcac\"\n\n\"Location\" or \"Info\" or \"Where are you\" or \"Address\" or \"Cafe details\" \u2192\nCafe Durga - Usmanpura \ud83d\ude0a\n\n\ud83d\udccd Address: Near VITS Hotel, Railway Station Road, Usmanpura, Chhatrapati Sambhajinagar, Maharashtra - 431005\n\n\u23f0 Hours: 10:00 AM - 12:00 AM Daily\n\ud83d\udcde Phone: 08055718055\n\n\ud83d\uddfa\ufe0f Google Maps: https://maps.app.goo.gl/Vr3w5hL1gjDgmkcE7\n\n\ud83d\udef5 Order Online:\n\u2022 Zomato: https://www.zomato.com/aurangabad/cafe-durga-usmanpura/menu\n\u2022 Swiggy: https://www.swiggy.com/city/aurangabad/cafe-durga-usmanpura-rest514341\n\n\u2b50 Rating: 4.0/5\n\ud83d\udcb0 \u20b9250-300 for two\n\nLooking forward to serving you! \ud83d\udc9b\n\n\ud83c\udfaf KEY RULES:\n\n1. Never ask for same info twice\n2. Parse multiple details when provided together\n3. Always acknowledge complete information\n4. Output ORDER_DATA markers ONLY after final confirmation in step 6\n5. Track conversation state throughout the ordering process\n6. Be friendly but efficient\n7. Respond to \"that's it\" appropriately at all stages\n8. Use plain text in responses (NO markdown formatting)\n9. Keep responses conversational and warm\n10. Always include 1-2 emojis per message for warmth\n\n\ud83d\udd27 STATE TRACKING:\n\nTrack these variables mentally throughout conversation:\n- items_ordered: [] (list of items with prices)\n- order_method: null (Zomato/Swiggy/Dine-in)\n- customer_name: null\n- phone_number: null (must be 10 digits)\n- delivery_address_or_time: null\n- order_confirmed: false\n- total_amount: 0 (running total)\n\nMove forward to next step only when current step is complete. Never skip steps in the order flow.",
-          "maxIterations": 10
+          "systemMessage": "You are Raj, a friendly sales assistant for Cafe Durga, Chhatrapati Sambhajinagar. Your goal is to help customers order AND increase their order value naturally.\n\nCRITICAL OUTPUT RULE:\nRespond ONLY with valid JSON. No text outside the JSON. Use \\n for line breaks inside the message string \u2014 never real newlines inside a JSON string.\n\nJSON schema (all fields always present):\n{\"message\":\"\",\"order_confirmed\":false,\"customer_name\":\"\",\"phone\":\"\",\"address\":\"\",\"items\":\"\",\"total\":0,\"method\":\"\",\"status\":\"\"}\n\nMESSAGE FORMATTING:\nUse \\n for new lines. Use emojis naturally (1-3 per message). No asterisks, no markdown. Keep text warm and readable on mobile.\n\nEXAMPLE \u2014 menu reply format:\n\"Here's our menu \ud83d\ude0a\\n\\nShakes:\\nCold Coffee - \u20b9120\\nOreo Shake - \u20b9160\\n\\nPizza:\\nCorn Pizza - \u20b9220 \u2b50 Bestseller\\n\\nWhat would you like?\"\n\nEXAMPLE \u2014 item confirmed format:\n\"Added 1x Corn Pizza \u20b9220 to your order \ud83c\udf55\\n\\nAnything else? Our Oreo Shake pairs great with it!\"\n\nEXAMPLE \u2014 order summary format:\n\"Here's your order summary \ud83d\ude0a\\n\\n1x Corn Pizza - \u20b9220\\n1x Oreo Shake - \u20b9160\\n\\nSubtotal: \u20b9380\\n\\nHow would you like to receive it?\\n1. Zomato\\n2. Swiggy\\n3. Dine-in\"\n\nMENU (\u20b9):\nShakes: Cold Coffee 120, Thick Cold Coffee 120, Thick Cold Coffee+Crush 170, Cold Coffee+Crush 120, Cold Coffee+Thunder 160, Thick Cold Coffee+Thunder 180, Cad-B 220, Cad-M 230, Oreo Shake 160, Black Forest Shake 150, Mango Shake 140, Brownie Shake 160, Vanilla Shake 120, Black Current Shake 140, Kiwi Shake 140, Kit Kat Shake 160, Strawberry Shake 140, Chocolate Shake 160, Butter Scotch Shake 120, Rose Shake 120\nSandwiches: Chocolate Sandwich 180, Paneer Sandwich 200, Cheese Corn Sandwich 150, Veg Tikki Sandwich 160, Classic Sandwich 170, Classic Cheese Sandwich 140, Bombay Sandwich 150, Tandoor Paneer Sandwich 180, Tandoor Paneer Club Sandwich 270, Baked Club Sandwich 300, Cheese Bombay Club 280, Paneer Tikka Sandwich 200, Pasta Sandwich 250\nPav Bhaji: Pav Bhaji 140, Extra Pav 20, Cheese Pav Bhaji 170, Masala Pav 120, Cheese Masala Pav 140\nMaggi: Plain Maggie 110, Cheese Maggie 160, Masala Maggie 160, Peri Peri Maggie 160, Paneer Maggie 180, Capsi Corn Maggie 160, Durga Special Maggie 240\nFries: Salted Fries 190, Peri Peri Fries 220, Masala Fries 210, Cheese Fries 260, Patato Shots 180, Chilly Garlic Patato Pops 200\nPizza: Margarita Pizza 180, Corn Pizza 220 \u2b50BESTSELLER, Onion Capsicum Pizza 180, Paneer Mexican Pizza 200\nBurgers: Classic Veg Burger 130, Paneer Burger 160, Cheese Burger 170, Maharaja Burger 280\nBreads: Cheese Garlic Bread 180, Cheese Chilly Toast 130, Bread Pizza Bite 170\nPasta: Red Sauce Pasta 220, White Sauce Pasta 250, Lasagna Baked Pasta 350\nDelivery fee: \u20b930\n\nSALES RULES (do this naturally, never pushy):\n- When customer orders food, suggest a shake or beverage if none ordered yet\n- When customer orders a shake only, mention a quick snack (fries, sandwich)\n- Mention the Corn Pizza as bestseller if customer is browsing or undecided\n- When showing final total, if it's under \u20b9200, gently ask if they'd like to add anything\n- Always say \"Anything else?\" after adding each item\n\nORDER FLOW:\n1. Greet warmly. Ask what they want to order.\n2. Add items one by one. Confirm each. Track running total. Upsell naturally.\n3. When customer says done/no/that's it \u2014 show full order summary with \\n formatting, then ask delivery method:\n   \"1. Zomato\\n2. Swiggy\\n3. Dine-in\"\n4. Collect details:\n   Zomato/Swiggy: ask name + phone. After collecting, share link.\n     Zomato link: https://www.zomato.com/aurangabad/cafe-durga-usmanpura\n     Swiggy link: https://www.swiggy.com/city/aurangabad/cafe-durga-usmanpura-rest514341\n   Dine-in: ask name + phone + preferred time.\n5. Final confirmation: send complete formatted summary. Set order_confirmed=true, status=Confirmed.\n   Do NOT set order_confirmed=true at any earlier step.\n\nPHONE RULE: Must be exactly 10 digits. If invalid, ask again politely.\nNever ask for info already provided in conversation.\n\nSPECIAL COMMANDS (reply immediately, skip order flow):\n\"status\"/\"order status\" \u2192 \"Your order is being prepared! \ud83d\udc9b\"\n\"agent\"/\"talk to human\"/\"support\" \u2192 \"Connecting you to our team at 08055718055 \ud83d\udcac\"\n\"location\"/\"info\"/\"where are you\"/\"address\"/\"cafe details\" \u2192 \"Cafe Durga - Usmanpura \ud83d\ude0a\\n\\n\ud83d\udccd Near VITS Hotel, Railway Station Road, Usmanpura, Chhatrapati Sambhajinagar - 431005\\n\u23f0 10:00 AM - 12:00 AM Daily\\n\ud83d\udcde 08055718055\\n\\n\ud83d\udef5 Order Online:\\nZomato: https://www.zomato.com/aurangabad/cafe-durga-usmanpura\\nSwiggy: https://www.swiggy.com/city/aurangabad/cafe-durga-usmanpura-rest514341\\n\\n\ud83d\uddfa\ufe0f Maps: https://maps.app.goo.gl/5BveExioyCCH9f1k6\\n\u2b50 4.0/5 | \u20b9250-300 for two\"\n",
+          "maxIterations": 1
         }
       },
-      "id": "ai-agent-groq-001",
-      "name": "AI Agent (Groq)",
+      "id": "c8694650-b1d0-4926-9aca-95b65b8249a5",
+      "name": "AI Agent",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.8,
       "position": [
-        460,
-        400
+        -1104,
+        -512
       ],
-      "notes": "Processes customer messages using Groq's Llama model",
-      "retryOnFail": true,
-      "maxTries": 3,
-      "waitBetweenTries": 2000
+      "notesInFlow": true,
+      "notes": "Groq Llama 3.3 70B \u2014 outputs structured JSON always. No Structured Output Parser (removed \u2014 causes mid-conversation failures). JSON parsed in Enrich node."
     },
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "={{ $json.message.chat.id }}",
-        "contextWindowLength": 10
+        "sessionKey": "={{ $('Telegram Trigger').first().json.message.chat.id }}",
+        "contextWindowLength": 5
       },
-      "id": "memory-buffer-001",
+      "id": "a6c06565-9960-4463-9927-0cdd0d3b0872",
       "name": "Window Buffer Memory",
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        460,
-        560
+        -968,
+        -288
       ],
-      "notes": "Maintains conversation history per customer (last 10 messages)"
+      "notes": "Stores last 20 messages per customer session"
     },
     {
       "parameters": {
-        "model": "llama-3.3-70b-versatile",
-        "options": {
-          "temperature": 0.5,
-          "maxTokens": 500
-        }
+        "jsCode": "const items = $input.all();\nconst chatId = String($('Telegram Trigger').first().json.message.chat.id);\n\nconst now = new Date();\nconst ist = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));\nconst pad = (n) => String(n).padStart(2, '0');\nconst timestamp = `${pad(ist.getUTCDate())}/${pad(ist.getUTCMonth()+1)}/${ist.getUTCFullYear()} ${pad(ist.getUTCHours())}:${pad(ist.getUTCMinutes())} IST`;\n\nlet raw_output = '';\nif (items.length > 0 && items[0].json) {\n  const item = items[0].json;\n  raw_output = (item.output || item.text || item.response || item.content || JSON.stringify(item)).toString().trim();\n}\n\nif (!raw_output || raw_output === '' || raw_output === 'undefined' || raw_output === '{}') {\n  return [{\n    json: {\n      order_confirmed: false,\n      telegram_message: \"Hi! I'm Raj from Cafe Durga \ud83d\ude0a How can I help you today?\",\n      chat_id: chatId,\n      order_id: '', customer_name: '', phone_number: '', phone_valid: false,\n      delivery_address: '', order_info: '', total_price: '0',\n      order_method: '', order_status: '', timestamp: timestamp,\n      validation_passed: false\n    }\n  }];\n}\n\nlet raw = {};\nlet parseSuccess = false;\n\ntry {\n  raw = JSON.parse(raw_output);\n  parseSuccess = true;\n} catch(e) {\n  try {\n    const cleaned = raw_output.replace(/^```json\\s*/i, '').replace(/^```\\s*/i, '').replace(/```\\s*$/i, '').replace(/^`/g, '').replace(/`$/g, '').trim();\n    raw = JSON.parse(cleaned);\n    parseSuccess = true;\n  } catch(e2) {\n    try {\n      const jsonMatch = raw_output.match(/\\{[\\s\\S]*\\}/);\n      if (jsonMatch) {\n        raw = JSON.parse(jsonMatch[0]);\n        parseSuccess = true;\n      }\n    } catch(e3) {}\n  }\n}\n\nif (!parseSuccess || !raw || Object.keys(raw).length === 0) {\n  raw = {\n    order_confirmed: false,\n    message: raw_output || \"Hi! I'm Raj from Cafe Durga \ud83d\ude0a What would you like to order?\",\n    order_id: '', customer_name: '', phone: '', address: '', items: '', total: 0, method: '', status: ''\n  };\n}\n\nlet telegramMessage = (raw.message || raw.response || raw.text || raw.reply || '').trim().replace(/\\\\n/g, '\\n');\n\nif (!telegramMessage) {\n  if (raw.order_confirmed === true) {\n    telegramMessage = \"Order confirmed! \u2705\\n\\nThank you for choosing Cafe Durga! \ud83d\ude0a\";\n  } else {\n    telegramMessage = \"Hi! I'm Raj from Cafe Durga \ud83d\ude0a What would you like to order today?\";\n  }\n}\n\nconst phoneRaw = raw.phone || raw.phone_number || raw.phoneNumber || '';\nconst phoneClean = phoneRaw.toString().replace(/[^0-9]/g, '');\nconst phoneValid = /^[0-9]{10}$/.test(phoneClean);\n\nconst customerName = (raw.customer_name || raw.customerName || raw.name || '').trim();\nconst deliveryAddress = (raw.address || raw.delivery_address || raw.deliveryAddress || '').trim();\n\nconst orderId = (raw.order_id && raw.order_id.trim() !== '' && !raw.order_id.includes('[') && !raw.order_id.includes('unix'))\n  ? raw.order_id\n  : `CD-${Math.floor(Date.now() / 1000)}`;\n\nconst totalAmount = Number(raw.total || raw.total_price || raw.totalPrice || raw.amount || 0);\n\nconst validationPassed = raw.order_confirmed === true && phoneValid && customerName.length > 0 && totalAmount > 0;\n\nreturn [{\n  json: {\n    order_confirmed: raw.order_confirmed === true,\n    telegram_message: telegramMessage,\n    chat_id: chatId,\n    order_id: orderId,\n    customer_name: customerName,\n    phone_number: phoneClean,\n    phone_valid: phoneValid,\n    delivery_address: deliveryAddress,\n    order_info: raw.items || '',\n    total_price: String(totalAmount),\n    order_method: raw.method || raw.orderMethod || '',\n    order_status: raw.status || 'Confirmed',\n    timestamp: timestamp,\n    validation_passed: validationPassed\n  }\n}];\n"
       },
-      "id": "groq-model-001",
-      "name": "Groq Chat Model",
-      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
-      "typeVersion": 1,
-      "position": [
-        460,
-        720
-      ],
-      "notes": "LLM model for generating responses"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Extract order data with improved parsing\nconst output = $input.first().json.output;\nconst chatId = $('Telegram Trigger').first().json.message.chat.id;\n\n// Check for ORDER_DATA markers\nconst orderDataMatch = output.match(/---ORDER_DATA---([\\s\\S]*?)---END_ORDER_DATA---/);\n\nif (orderDataMatch) {\n  const orderData = orderDataMatch[1];\n  \n  // Enhanced field extraction with fallbacks\n  const extractField = (fieldName) => {\n    const regex = new RegExp(`${fieldName}:\\\\s*(.+?)(?=\\\\n[A-Z_]+:|\\\\n---|$)`, 's');\n    const match = orderData.match(regex);\n    if (match) {\n      return match[1].trim();\n    }\n    return '';\n  };\n  \n  // Generate IST timestamp\n  const now = new Date();\n  const istOffset = 5.5 * 60 * 60 * 1000;\n  const istTime = new Date(now.getTime() + istOffset);\n  \n  const day = String(istTime.getUTCDate()).padStart(2, '0');\n  const month = String(istTime.getUTCMonth() + 1).padStart(2, '0');\n  const year = istTime.getUTCFullYear();\n  const hour = String(istTime.getUTCHours()).padStart(2, '0');\n  const minute = String(istTime.getUTCMinutes()).padStart(2, '0');\n  const timestamp = `${day}/${month}/${year} ${hour}:${minute}`;\n  \n  // Extract all fields with defaults\n  const orderId = extractField('ORDER_ID') || `CD-${Math.floor(Date.now() / 1000)}`;\n  const customerName = extractField('CUSTOMER_NAME') || 'Unknown';\n  const phone = extractField('PHONE') || 'N/A';\n  const address = extractField('ADDRESS') || 'N/A';\n  const items = extractField('ITEMS') || 'N/A';\n  const total = extractField('TOTAL').replace(/[^0-9]/g, '') || '0';\n  const method = extractField('METHOD') || 'Unknown';\n  const status = extractField('STATUS') || 'Confirmed';\n  \n  // Remove ORDER_DATA from user message\n  const cleanMessage = output.replace(/---ORDER_DATA---[\\s\\S]*?---END_ORDER_DATA---/, '').trim();\n  \n  return {\n    json: {\n      telegram_message: cleanMessage,\n      has_order_data: true,\n      order_id: orderId,\n      customer_name: customerName,\n      chat_id: String(chatId),\n      phone_number: phone,\n      delivery_address: address,\n      order_info: items,\n      total_price: total,\n      order_method: method,\n      order_status: status,\n      timestamp: timestamp\n    }\n  };\n} else {\n  // No order data found\n  return {\n    json: {\n      telegram_message: output,\n      has_order_data: false,\n      chat_id: String(chatId)\n    }\n  };\n}"
-      },
-      "id": "extract-order-data-001",
-      "name": "Extract Order Data",
+      "id": "e4eec2fa-2bc9-404f-9107-ddd4c634f72d",
+      "name": "Enrich & Validate Data",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        680,
-        400
+        -752,
+        -408
       ],
-      "notes": "Parses confirmed orders and extracts structured data",
-      "continueOnFail": true
+      "notesInFlow": true,
+      "notes": "Parses AI JSON output (with fallback), validates phone, enriches with IST timestamp, builds Telegram message. Returns array [{json}] as required by n8n Code node v2."
     },
     {
       "parameters": {
@@ -102,7 +103,7 @@
           "conditions": [
             {
               "id": "has-order-check",
-              "leftValue": "={{ $json.has_order_data }}",
+              "leftValue": "={{ $json.order_confirmed }}",
               "rightValue": true,
               "operator": {
                 "type": "boolean",
@@ -114,267 +115,583 @@
         },
         "options": {}
       },
-      "id": "if-has-order-001",
-      "name": "Has Order Data?",
+      "id": "34f3ef5a-0b39-4f1f-a4d4-399579f1a79c",
+      "name": "Is Order Confirmed?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        900,
-        400
+        -528,
+        -408
       ],
-      "notes": "Routes execution based on whether order data exists"
+      "notes": "True (output 0) \u2192 log to sheet + confirm + notify admin. False (output 1) \u2192 just reply to customer"
     },
     {
       "parameters": {
         "chatId": "={{ $json.chat_id }}",
         "text": "={{ $json.telegram_message }}",
         "additionalFields": {
-          "appendAttribution": false,
-          "parse_mode": "HTML"
+          "appendAttribution": false
         }
       },
-      "id": "send-telegram-001",
-      "name": "Send to Telegram",
+      "id": "5b396996-b2be-4252-ae3f-a307a0bd9582",
+      "name": "Reply to Customer",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1120,
-        300
+        -304,
+        -312
       ],
-      "notes": "Sends response back to customer",
-      "retryOnFail": true,
-      "maxTries": 3,
-      "waitBetweenTries": 1000
-    },
-    {
-      "parameters": {
-        "operation": "read",
-        "documentId": {
-          "__rl": true,
-          "mode": "id",
-          "value": "YOUR_GOOGLE_SHEET_ID"
-        },
-        "sheetName": {
-          "__rl": true,
-          "mode": "list",
-          "value": "gid=0"
-        },
-        "filtersUI": {
-          "values": []
-        },
-        "options": {
-          "range": "A1:J1"
-        }
-      },
-      "id": "check-headers-001",
-      "name": "Check Sheet Headers",
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.5,
-      "position": [
-        1120,
-        500
-      ],
-      "notes": "Checks if header row exists in Google Sheet",
-      "continueOnFail": true,
       "retryOnFail": true,
       "maxTries": 2,
-      "waitBetweenTries": 1000
+      "waitBetweenTries": 1000,
+      "notesInFlow": true,
+      "webhookId": "f402c6ec-ff1a-4c82-bd38-413dd7e50b9b",
+      "credentials": {
+        "telegramApi": {
+          "id": "nWEoHrxgHBFWhPgx",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Sends AI response back to the customer (non-order / mid-conversation replies)"
     },
     {
       "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "loose"
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Uj4XtQYOTe4KyBRjDIrQlHQ2CO3L9RKm4JqDkiQfVeU",
+          "mode": "list",
+          "cachedResultName": "Cafe Durga - Orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Uj4XtQYOTe4KyBRjDIrQlHQ2CO3L9RKm4JqDkiQfVeU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Uj4XtQYOTe4KyBRjDIrQlHQ2CO3L9RKm4JqDkiQfVeU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Customer Name": "={{ $json.customer_name }}",
+            "Order ID": "={{ $json.order_id }}",
+            "Timestamp": "={{ $json.timestamp }}",
+            "Phone": "={{ $json.phone_number }}",
+            "Address / Dine-in Time": "={{ $json.delivery_address }}",
+            "Items": "={{ $json.order_info }}",
+            "Total": "={{ $json.total_price }}",
+            "Method": "={{ $json.order_method }}",
+            "Status": "={{ $json.order_status }}"
           },
-          "conditions": [
+          "matchingColumns": [],
+          "schema": [
             {
-              "id": "header-exists-check",
-              "leftValue": "={{ $json['Order id'] }}",
-              "rightValue": "",
-              "operator": {
-                "type": "string",
-                "operation": "exists"
-              }
+              "id": "Order ID",
+              "displayName": "Order ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Address / Dine-in Time",
+              "displayName": "Address / Dine-in Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Items",
+              "displayName": "Items",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Total",
+              "displayName": "Total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Method",
+              "displayName": "Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
             }
           ],
-          "combinator": "and"
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
         },
         "options": {}
       },
-      "id": "if-headers-exist-001",
-      "name": "Headers Exist?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        1340,
-        500
-      ],
-      "notes": "Checks if headers are present"
-    },
-    {
-      "parameters": {
-        "operation": "append",
-        "documentId": {
-          "__rl": true,
-          "mode": "id",
-          "value": "YOUR_GOOGLE_SHEET_ID"
-        },
-        "sheetName": {
-          "__rl": true,
-          "mode": "list",
-          "value": "gid=0"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "Order id": "Order id",
-            "Customer Name": "Customer Name",
-            "Chat id": "Chat id",
-            "Phone number": "Phone number",
-            "Delivery Address": "Delivery Address",
-            "Order info": "Order info",
-            "Total Price": "Total Price",
-            "Order Method": "Order Method",
-            "Order Status": "Order Status",
-            "Timestamp": "Timestamp"
-          },
-          "matchingColumns": [],
-          "schema": []
-        },
-        "options": {}
-      },
-      "id": "create-headers-001",
-      "name": "Create Header Row",
+      "id": "603bcaca-dde5-4a39-bb49-2987e8e9ba6f",
+      "name": "Log Order to Sheet",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        1560,
-        600
+        -304,
+        -504
       ],
-      "notes": "Creates header row if it doesn't exist"
-    },
-    {
-      "parameters": {
-        "operation": "append",
-        "documentId": {
-          "__rl": true,
-          "mode": "id",
-          "value": "YOUR_GOOGLE_SHEET_ID"
-        },
-        "sheetName": {
-          "__rl": true,
-          "mode": "list",
-          "value": "gid=0"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "Order id": "={{ $('Extract Order Data').item.json.order_id }}",
-            "Customer Name": "={{ $('Extract Order Data').item.json.customer_name }}",
-            "Chat id": "={{ $('Extract Order Data').item.json.chat_id }}",
-            "Phone number": "={{ $('Extract Order Data').item.json.phone_number }}",
-            "Delivery Address": "={{ $('Extract Order Data').item.json.delivery_address }}",
-            "Order info": "={{ $('Extract Order Data').item.json.order_info }}",
-            "Total Price": "={{ $('Extract Order Data').item.json.total_price }}",
-            "Order Method": "={{ $('Extract Order Data').item.json.order_method }}",
-            "Order Status": "={{ $('Extract Order Data').item.json.order_status }}",
-            "Timestamp": "={{ $('Extract Order Data').item.json.timestamp }}"
-          },
-          "matchingColumns": [],
-          "schema": []
-        },
-        "options": {}
-      },
-      "id": "append-order-001",
-      "name": "Append Order to Sheet",
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.5,
-      "position": [
-        1780,
-        500
-      ],
-      "notes": "Logs order data to Google Sheet",
       "retryOnFail": true,
-      "maxTries": 3,
-      "waitBetweenTries": 2000
-    },
-    {
-      "parameters": {},
-      "id": "error-trigger-001",
-      "name": "Error Trigger",
-      "type": "n8n-nodes-base.errorTrigger",
-      "typeVersion": 1,
-      "position": [
-        240,
-        800
-      ],
-      "notes": "Triggers when workflow errors occur"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Format error details for notification\nconst error = $input.first().json;\n\nconst errorMessage = `\ud83d\udea8 Cafe Durga Bot Error Alert\n\nWorkflow: ${error.workflow?.name || 'Unknown'}\nNode: ${error.error?.node?.name || 'Unknown'}\nError: ${error.error?.message || 'No details'}\nTime: ${error.error?.timestamp || new Date().toISOString()}\nExecution ID: ${error.execution?.id || 'N/A'}\n\nPlease check the workflow immediately!`;\n\nreturn {\n  json: {\n    error_message: errorMessage,\n    workflow_name: error.workflow?.name,\n    error_node: error.error?.node?.name,\n    error_details: error.error?.message\n  }\n};"
+      "maxTries": 2,
+      "waitBetweenTries": 1000,
+      "notesInFlow": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "1jAo1TPd2AzMdgVf",
+          "name": "Google Sheets account"
+        }
       },
-      "id": "format-error-001",
-      "name": "Format Error Message",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        460,
-        800
-      ],
-      "notes": "Formats error details for notification"
+      "notes": "Appends confirmed order to Google Sheet \u2014 headers must already exist in row 1"
     },
     {
       "parameters": {
-        "chatId": "YOUR_ADMIN_CHAT_ID",
-        "text": "={{ $json.error_message }}",
+        "chatId": "={{ $('Enrich & Validate Data').item.json.chat_id }}",
+        "text": "={{ $('Enrich & Validate Data').item.json.telegram_message }}",
         "additionalFields": {
           "appendAttribution": false
         }
       },
-      "id": "send-error-alert-001",
-      "name": "Send Error Alert",
+      "id": "0d0d688f-57e2-4269-90a9-67911df8d0b3",
+      "name": "Send Order Confirmation",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        680,
-        800
+        -80,
+        -504
       ],
-      "notes": "Sends error notification to admin"
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1000,
+      "notesInFlow": true,
+      "webhookId": "8a9873ad-9337-461b-a93f-5255924c8364",
+      "credentials": {
+        "telegramApi": {
+          "id": "nWEoHrxgHBFWhPgx",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Sends confirmation AFTER sheet write succeeds \u2014 guarantees logging happened first"
     },
     {
       "parameters": {
-        "content": "## \ud83c\udf54 Cafe Durga Telegram Order Bot - Production Ready\n\n### \u2728 Features\n- \u2705 AI-powered conversational ordering\n- \u2705 Automatic header creation in Google Sheets\n- \u2705 Robust error handling with retry logic\n- \u2705 Error notifications to admin\n- \u2705 Customer conversation memory (10 messages)\n- \u2705 Complete order logging with all details\n- \u2705 Location & info commands support\n- \u2705 IST timezone for timestamps\n\n### \ud83d\udd27 Setup Instructions\n1. **Replace Credentials:**\n   - Telegram Bot Token\n   - Groq API Key\n   - Google Sheets OAuth2\n\n2. **Update Google Sheet ID:**\n   - Replace \"YOUR_GOOGLE_SHEET_ID\" in nodes:\n     * Check Sheet Headers\n     * Create Header Row\n     * Append Order to Sheet\n\n3. **Set Admin Chat ID:**\n   - Replace \"YOUR_ADMIN_CHAT_ID\" in \"Send Error Alert\" node\n   - Get your chat ID by messaging @userinfobot on Telegram\n\n4. **Test Workflow:**\n   - Send test message to bot\n   - Verify response\n   - Check order logging in sheet\n   - Test error handling\n\n### \ud83d\udcca Best Practices Implemented\n1. **Error Handling:** Retry on fail for critical nodes\n2. **Auto-Headers:** Automatically creates sheet headers if missing\n3. **Error Alerts:** Admin gets notified of any failures\n4. **Memory Management:** Stores last 10 messages per user\n5. **Data Validation:** Extracts and validates all order fields\n6. **Structured Logging:** Complete order data in Google Sheets\n7. **IST Timestamps:** All times in Indian Standard Time\n\n### \ud83c\udfaf Node Configuration\n- **Telegram Trigger:** Retries: 3, Wait: 2s\n- **AI Agent:** Retries: 3, Wait: 2s, Max tokens: 500\n- **Google Sheets:** Retries: 3, Wait: 2s\n- **Extract Order Data:** Continue on fail: Yes\n\n### \ud83d\udcdd Testing Checklist\n\u25a1 Bot responds to greetings\n\u25a1 Menu displays correctly\n\u25a1 Orders are processed\n\u25a1 Google Sheet logs data\n\u25a1 Headers auto-create if missing\n\u25a1 Error alerts work\n\u25a1 Memory persists across messages\n\u25a1 Location command works\n\u25a1 IST timestamps are correct\n\n### \ud83d\udd12 Security Notes\n- Never share credential IDs\n- Keep admin chat ID private\n- Regularly backup Google Sheets\n- Monitor error logs\n\n### \ud83d\udcde Cafe Durga Contact\nPhone: 08055718055\nLocation: Usmanpura, Sambhajinagar\nHours: 10 AM - 12 AM Daily"
+        "chatId": "1903854448",
+        "text": "\ud83d\udd14 NEW ORDER RECEIVED!\n\nCustomer: {{ $json.customer_name }}\nPhone: {{ $json.phone_number }}\nAddress: {{ $json.delivery_address }}\n\nOrder:\n{{ $json.order_info }}\n\nTotal: \u20b9{{ $json.total_price }}\nMethod: {{ $json.order_method }}\nOrder ID: {{ $json.order_id }}\n\nTime: {{ $json.timestamp }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
       },
-      "id": "sticky-note-001",
-      "name": "\ud83d\udcda Workflow Documentation",
+      "id": "1ab19a82-b4c9-4da2-80c1-156255df625f",
+      "name": "Notify Admin (New Order)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        144,
+        -504
+      ],
+      "notesInFlow": true,
+      "webhookId": "f9278e20-0ec8-4a8e-91a3-44e44fe60f0d",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1000,
+      "credentials": {
+        "telegramApi": {
+          "id": "nWEoHrxgHBFWhPgx",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Sends new order alert to admin Telegram. Uses $env.ADMIN_CHAT_ID \u2014 set this in n8n env vars"
+    },
+    {
+      "parameters": {
+        "path": "cafe-durga-orders",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "31a3e10e-ebc5-4faf-bae4-9ae8db0653cb",
+      "name": "Live Orders API",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1552,
+        -80
+      ],
+      "webhookId": "cafe-durga-live-orders",
+      "notesInFlow": true,
+      "notes": "GET /webhook/cafe-durga-orders \u2014 returns today's orders as JSON for the live display page"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Uj4XtQYOTe4KyBRjDIrQlHQ2CO3L9RKm4JqDkiQfVeU",
+          "mode": "list",
+          "cachedResultName": "Cafe Durga - Orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Uj4XtQYOTe4KyBRjDIrQlHQ2CO3L9RKm4JqDkiQfVeU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Uj4XtQYOTe4KyBRjDIrQlHQ2CO3L9RKm4JqDkiQfVeU/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "fe7013fa-d7e9-455e-a1cd-83ff3ff0cec9",
+      "name": "Read Orders from Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1328,
+        -80
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1000,
+      "notesInFlow": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "1jAo1TPd2AzMdgVf",
+          "name": "Google Sheets account"
+        }
+      },
+      "notes": "Reads ALL rows from the Orders sheet to serve the live display"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Filter for today's orders and build clean response\n// Also compute summary stats for the dashboard\n\nconst allOrders = $input.all().map(i => i.json);\n\n// Get today's date in DD/MM/YYYY (IST)\nconst now = new Date();\nconst istTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));\nconst pad = (n) => String(n).padStart(2, '0');\nconst todayPrefix = `${pad(istTime.getUTCDate())}/${pad(istTime.getUTCMonth() + 1)}/${istTime.getUTCFullYear()}`;\n\n// Filter to today and add sequential display number\nconst todayOrders = allOrders\n  .filter(o => (o['Timestamp'] || '').startsWith(todayPrefix))\n  .map((o, idx) => ({\n    display_number: idx + 1,\n    order_id: o['Order ID'] || '',\n    timestamp: o['Timestamp'] || '',\n    customer_name: o['Customer Name'] || '',\n    phone: o['Phone'] || '',\n    address: o['Address / Dine-in Time'] || '',\n    items: o['Items'] || '',\n    total: o['Total (\u20b9)'] || '0',\n    method: o['Method'] || '',\n    status: o['Status'] || 'Confirmed'\n  }));\n\n// Summary stats\nconst totalRevenue = todayOrders.reduce((sum, o) => sum + parseInt(o.total || 0, 10), 0);\nconst methodCounts = todayOrders.reduce((acc, o) => {\n  acc[o.method] = (acc[o.method] || 0) + 1;\n  return acc;\n}, {});\n\nreturn [{\n  json: {\n    success: true,\n    date: todayPrefix,\n    total_orders: todayOrders.length,\n    total_revenue: totalRevenue,\n    method_breakdown: methodCounts,\n    orders: todayOrders\n  }\n}];"
+      },
+      "id": "f53625e4-cd2f-4736-9c29-48f5eb598326",
+      "name": "Filter & Format Today's Orders",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1104,
+        -80
+      ],
+      "notesInFlow": true,
+      "notes": "Filters today's orders and adds summary stats for the dashboard"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Cache-Control",
+                "value": "no-cache, no-store, must-revalidate"
+              }
+            ]
+          }
+        }
+      },
+      "id": "9cb4a1b0-844a-4478-a5f2-0e869d18695e",
+      "name": "Respond with Orders JSON",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -880,
+        -80
+      ],
+      "notesInFlow": true,
+      "notes": "Returns JSON with CORS headers so the HTML display page can fetch it from any domain"
+    },
+    {
+      "parameters": {},
+      "id": "34949acb-e5cd-43df-912d-8420298d0967",
+      "name": "On Workflow Error",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1552,
+        144
+      ],
+      "notes": "Captures any workflow-level errors \u2014 set this workflow's ID in Settings > Error Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "const error = $input.first().json;\n\nconst now = new Date();\nconst ist = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));\nconst time = ist.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });\n\nconst errorMessage = `\ud83d\udea8 WORKFLOW ERROR\n\nTime: ${time}\nWorkflow: Cafe Durga Order Bot\nNode: ${error.node?.name || 'Unknown'}\nError: ${error.error?.message || 'Unknown error'}\n\nStack: ${error.error?.stack?.substring(0, 500) || 'No stack trace'}\n`;\n\nreturn [\n  {\n    json: {\n      message: errorMessage,\n    },\n  },\n];"
+      },
+      "id": "4440cab7-7c01-429b-9a94-c977517e3117",
+      "name": "Format Error Alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1328,
+        144
+      ],
+      "notes": "Formats error details for admin Telegram alert"
+    },
+    {
+      "parameters": {
+        "chatId": "1903854448",
+        "text": "={{ $json.message }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "7ffe8dd2-f613-4cf7-bf9e-1ffa79298a84",
+      "name": "Alert Admin (Error)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1104,
+        144
+      ],
+      "notesInFlow": true,
+      "webhookId": "a92dd4f0-c467-414c-8c93-c2dcf8195dd8",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1000,
+      "credentials": {
+        "telegramApi": {
+          "id": "nWEoHrxgHBFWhPgx",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Sends error notification to admin. Uses $env.ADMIN_CHAT_ID"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -1096,
+        -288
+      ],
+      "id": "d43321e0-2cae-4c58-be1c-096ac6efe13f",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "4dQdIFwhwG1pppsR",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Cafe Durga \u2014 Order Bot\n\n**Flow:** Telegram \u2192 Pre-filter \u2192 AI Agent (Groq) \u2192 Enrich \u2192 Route\n\n**Order path:** Log to Sheet \u2192 Confirm Customer \u2192 Notify Admin\n\n**Model:** llama-3.3-70b-versatile\n**Memory:** 5 conversation pairs per chat ID\n**Output:** Pure JSON parsed by Enrich node\n\n**Live Orders API:** GET /webhook/cafe-durga-orders\n**Admin Telegram:** 1903854448\n**Sheet:** Cafe Durga - Orders (Sheet1)",
+        "height": 260,
+        "width": 500,
+        "color": 3
+      },
+      "id": "sticky-note-cafe-durga",
+      "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        240,
-        80
+        -1552,
+        -640
       ]
     }
   ],
+  "pinData": {},
   "connections": {
     "Telegram Trigger": {
       "main": [
         [
           {
-            "node": "AI Agent (Groq)",
+            "node": "Pre-filter Messages",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "AI Agent (Groq)": {
+    "Pre-filter Messages": {
       "main": [
         [
           {
-            "node": "Extract Order Data",
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Enrich & Validate Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enrich & Validate Data": {
+      "main": [
+        [
+          {
+            "node": "Is Order Confirmed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Order Confirmed?": {
+      "main": [
+        [
+          {
+            "node": "Log Order to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reply to Customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Order to Sheet": {
+      "main": [
+        [
+          {
+            "node": "Send Order Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Order Confirmation": {
+      "main": [
+        [
+          {
+            "node": "Notify Admin (New Order)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Live Orders API": {
+      "main": [
+        [
+          {
+            "node": "Read Orders from Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Orders from Sheet": {
+      "main": [
+        [
+          {
+            "node": "Filter & Format Today's Orders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter & Format Today's Orders": {
+      "main": [
+        [
+          {
+            "node": "Respond with Orders JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On Workflow Error": {
+      "main": [
+        [
+          {
+            "node": "Format Error Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Error Alert": {
+      "main": [
+        [
+          {
+            "node": "Alert Admin (Error)",
             "type": "main",
             "index": 0
           }
@@ -385,7 +702,7 @@
       "ai_memory": [
         [
           {
-            "node": "AI Agent (Groq)",
+            "node": "AI Agent",
             "type": "ai_memory",
             "index": 0
           }
@@ -396,140 +713,59 @@
       "ai_languageModel": [
         [
           {
-            "node": "AI Agent (Groq)",
+            "node": "AI Agent",
             "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Extract Order Data": {
-      "main": [
-        [
-          {
-            "node": "Has Order Data?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Has Order Data?": {
-      "main": [
-        [
-          {
-            "node": "Send to Telegram",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Check Sheet Headers",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Send to Telegram",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Check Sheet Headers": {
-      "main": [
-        [
-          {
-            "node": "Headers Exist?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Headers Exist?": {
-      "main": [
-        [
-          {
-            "node": "Append Order to Sheet",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Create Header Row",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Create Header Row": {
-      "main": [
-        [
-          {
-            "node": "Append Order to Sheet",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Error Trigger": {
-      "main": [
-        [
-          {
-            "node": "Format Error Message",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Format Error Message": {
-      "main": [
-        [
-          {
-            "node": "Send Error Alert",
-            "type": "main",
             "index": 0
           }
         ]
       ]
     }
   },
-  "pinData": {},
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
-    "saveManualExecutions": true,
-    "callerPolicy": "workflowsFromSameOwner",
-    "errorWorkflow": "error-handler-workflow"
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "cafe-durga-v20260216",
+  "versionId": "e6705a19-979f-4156-9943-d777c60636c8",
   "meta": {
-    "templateCredsSetupCompleted": false,
-    "instanceId": "cafe-durga-production-bot"
+    "templateCredsSetupCompleted": true,
+    "instanceId": "265da8a1c7e9293538862d28402f002949a780e4e74b4e52de1c7433184c8ce7"
   },
-  "id": "cafe-durga-bot-v2",
+  "id": "bvVt1oglSNhsvLWs",
   "tags": [
     {
-      "id": "restaurant",
-      "name": "restaurant"
+      "name": "groq",
+      "id": "37HSvrpgAqn8c0B7",
+      "updatedAt": "2026-02-17T15:30:01.899Z",
+      "createdAt": "2026-02-17T15:30:01.899Z"
     },
     {
-      "id": "telegram",
-      "name": "telegram"
+      "name": "ai-agent",
+      "id": "7BkJ1C2W1U7UqO1J",
+      "updatedAt": "2026-02-17T15:30:01.893Z",
+      "createdAt": "2026-02-17T15:30:01.893Z"
     },
     {
-      "id": "ai",
-      "name": "ai"
+      "name": "telegram",
+      "id": "InX6oVVxiKtM2Mzu",
+      "updatedAt": "2026-02-17T15:30:01.847Z",
+      "createdAt": "2026-02-17T15:30:01.847Z"
     },
     {
-      "id": "orders",
-      "name": "orders"
+      "name": "restaurant",
+      "id": "Jyh4mzMYBTpsIdTK",
+      "updatedAt": "2026-02-17T15:30:01.889Z",
+      "createdAt": "2026-02-17T15:30:01.889Z"
+    },
+    {
+      "name": "order-automation",
+      "id": "MtsbVm8MRcr1yq95",
+      "updatedAt": "2026-02-17T15:30:01.905Z",
+      "createdAt": "2026-02-17T15:30:01.905Z"
     }
   ]
 }
